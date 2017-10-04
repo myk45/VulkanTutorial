@@ -255,9 +255,7 @@ VkResult createSwapchain()
 	// Get available present modes
 	uint32_t presentModeCount;
 	err = vkGetPhysicalDeviceSurfacePresentModesKHR(physDevice, surface, &presentModeCount, NULL);
-
 	std::vector<VkPresentModeKHR> presentModes(presentModeCount);
-
 	err = vkGetPhysicalDeviceSurfacePresentModesKHR(physDevice, surface, &presentModeCount, presentModes.data());
 
 	VkExtent2D swapchainExtent = {};
@@ -273,8 +271,8 @@ VkResult createSwapchain()
 	{
 		// If the surface size is defined, the swap chain size must match
 		swapchainExtent = surfCaps.currentExtent;
-		width = surfCaps.currentExtent.width;
-		height = surfCaps.currentExtent.height;
+		width			= surfCaps.currentExtent.width;
+		height			= surfCaps.currentExtent.height;
 	}
 
 	VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
@@ -309,23 +307,23 @@ VkResult createSwapchain()
 	}
 
 	VkSwapchainCreateInfoKHR scinfo;
-	scinfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	scinfo.pNext = NULL;
-	scinfo.surface = surface;
-	scinfo.minImageCount = desiredNumberOfSwapchainImages;
-	scinfo.imageFormat = colorFormat;
-	scinfo.imageColorSpace = colorSpace;
-	scinfo.imageExtent = { swapchainExtent.width, swapchainExtent.height };
-	scinfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-	scinfo.preTransform = (VkSurfaceTransformFlagBitsKHR)preTransform;
-	scinfo.imageArrayLayers = 1;
-	scinfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	scinfo.sType				 = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	scinfo.pNext				 = NULL;
+	scinfo.surface				 = surface;
+	scinfo.minImageCount		 = desiredNumberOfSwapchainImages;
+	scinfo.imageFormat			 = colorFormat;
+	scinfo.imageColorSpace		 = colorSpace;
+	scinfo.imageExtent			 = { swapchainExtent.width, swapchainExtent.height };
+	scinfo.imageUsage			 = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	scinfo.preTransform			 = (VkSurfaceTransformFlagBitsKHR)preTransform;
+	scinfo.imageArrayLayers		 = 1;
+	scinfo.imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE;
 	scinfo.queueFamilyIndexCount = 0;
-	scinfo.pQueueFamilyIndices = NULL;
-	scinfo.presentMode = presentMode;
-	scinfo.clipped = true;
-	scinfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	scinfo.oldSwapchain = VK_NULL_HANDLE;
+	scinfo.pQueueFamilyIndices	 = NULL;
+	scinfo.presentMode		     = presentMode;
+	scinfo.clipped				 = true;
+	scinfo.compositeAlpha		 = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	scinfo.oldSwapchain		   	 = VK_NULL_HANDLE;
 	vkCreateSwapchainKHR(device, &scinfo, NULL, &swapchain);
 
 	err = vkGetSwapchainImagesKHR(device, swapchain, &imageCount, NULL);
@@ -338,27 +336,26 @@ VkResult createSwapchain()
 	for (uint32_t i = 0; i < imageCount; i++)
 	{
 		VkImageViewCreateInfo colorAttachmentView = {};
-		colorAttachmentView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		colorAttachmentView.pNext = NULL;
-		colorAttachmentView.format = colorFormat;
-		colorAttachmentView.components = {
-			VK_COMPONENT_SWIZZLE_R,
-			VK_COMPONENT_SWIZZLE_G,
-			VK_COMPONENT_SWIZZLE_B,
-			VK_COMPONENT_SWIZZLE_A
-		};
-		colorAttachmentView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		colorAttachmentView.subresourceRange.baseMipLevel = 0;
-		colorAttachmentView.subresourceRange.levelCount = 1;
+		colorAttachmentView.sType							= VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		colorAttachmentView.pNext							= NULL;
+		colorAttachmentView.format							= colorFormat;
+		colorAttachmentView.components					    = {VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, 
+															   VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
+		colorAttachmentView.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+		colorAttachmentView.subresourceRange.baseMipLevel   = 0;
+		colorAttachmentView.subresourceRange.levelCount     = 1;
 		colorAttachmentView.subresourceRange.baseArrayLayer = 0;
-		colorAttachmentView.subresourceRange.layerCount = 1;
-		colorAttachmentView.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		colorAttachmentView.flags = 0;
+		colorAttachmentView.subresourceRange.layerCount		= 1;
+		colorAttachmentView.viewType						= VK_IMAGE_VIEW_TYPE_2D;
+		colorAttachmentView.flags							= 0;
 
-		buffers[i].image = images[i];
-		colorAttachmentView.image = buffers[i].image;
+		buffers[i].image								    = images[i];
+		colorAttachmentView.image						    = buffers[i].image;
+
 		err = vkCreateImageView(device, &colorAttachmentView, NULL, &buffers[i].view);
+		assert(err == VK_SUCCESS);
 	}
+
 	return err;
 }
 
@@ -452,15 +449,15 @@ VkResult buildPresentCommandBuffers()
 		}
 
 		VkImageMemoryBarrier postPresentBarrier;
-		postPresentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		postPresentBarrier.srcAccessMask = 0;
-		postPresentBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		postPresentBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		postPresentBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		postPresentBarrier.sType			   = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		postPresentBarrier.srcAccessMask	   = 0;
+		postPresentBarrier.dstAccessMask       = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		postPresentBarrier.oldLayout	       = VK_IMAGE_LAYOUT_UNDEFINED;
+		postPresentBarrier.newLayout		   = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		postPresentBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		postPresentBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		postPresentBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-		postPresentBarrier.image = buffers[i].image;
+		postPresentBarrier.subresourceRange    = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+		postPresentBarrier.image			   = buffers[i].image;
 
 		vkCmdPipelineBarrier(
 			postPresentCmdBuffers[i],
@@ -484,23 +481,23 @@ VkResult buildPresentCommandBuffers()
 		}
 
 		VkImageMemoryBarrier prePresentBarrier;
-		prePresentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		prePresentBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		prePresentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		prePresentBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		prePresentBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		prePresentBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		prePresentBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		prePresentBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-		prePresentBarrier.image = buffers[i].image;
+		prePresentBarrier.sType				   = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		prePresentBarrier.srcAccessMask		   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		prePresentBarrier.dstAccessMask		   = VK_ACCESS_MEMORY_READ_BIT;
+		prePresentBarrier.oldLayout			   = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		prePresentBarrier.newLayout			   = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		prePresentBarrier.srcQueueFamilyIndex  = VK_QUEUE_FAMILY_IGNORED;
+		prePresentBarrier.dstQueueFamilyIndex  = VK_QUEUE_FAMILY_IGNORED;
+		prePresentBarrier.subresourceRange	   = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+		prePresentBarrier.image				   = buffers[i].image;
 
 		vkCmdPipelineBarrier(
 			prePresentCmdBuffers[i],
 			VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
 			VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 			0,
-			0, NULL, // No memory barriers,
-			0, NULL, // No buffer barriers,
+			0, NULL,
+			0, NULL,
 			1, &prePresentBarrier);
 
 		err = vkEndCommandBuffer(prePresentCmdBuffers[i]);
@@ -520,37 +517,37 @@ VkResult setupDepthStencil()
 	}
 
 	VkImageCreateInfo image = {};
-	image.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	image.pNext = NULL;
-	image.imageType = VK_IMAGE_TYPE_2D;
-	image.format = depthFormat;
-	image.extent = { width, height, 1 };
-	image.mipLevels = 1;
-	image.arrayLayers = 1;
-	image.samples = VK_SAMPLE_COUNT_1_BIT;
-	image.tiling = VK_IMAGE_TILING_OPTIMAL;
-	image.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-	image.flags = 0;
-	image.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	image.sType										 = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	image.pNext										 = NULL;
+	image.imageType									 = VK_IMAGE_TYPE_2D;
+	image.format									 = depthFormat;
+	image.extent									 = { width, height, 1 };
+	image.mipLevels									 = 1;
+	image.arrayLayers								 = 1;
+	image.samples									 = VK_SAMPLE_COUNT_1_BIT;
+	image.tiling									 = VK_IMAGE_TILING_OPTIMAL;
+	image.usage										 = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+	image.flags										 = 0;
+	image.initialLayout								 = VK_IMAGE_LAYOUT_UNDEFINED; // Must be UNDEFINED OR PREINITIALIZED
 
-	VkMemoryAllocateInfo mem_alloc = {};
-	mem_alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	mem_alloc.pNext = NULL;
-	mem_alloc.allocationSize = 0;
-	mem_alloc.memoryTypeIndex = 0;
+	VkMemoryAllocateInfo memAlloc = {};
+	memAlloc.sType									 = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	memAlloc.pNext									 = NULL;
+	memAlloc.allocationSize							 = 0;
+	memAlloc.memoryTypeIndex						 = 0;
 
 	VkImageViewCreateInfo depthStencilView = {};
-	depthStencilView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	depthStencilView.pNext = NULL;
-	depthStencilView.viewType = VK_IMAGE_VIEW_TYPE_2D;
-	depthStencilView.format = depthFormat;
-	depthStencilView.flags = 0;
-	depthStencilView.subresourceRange = {};
-	depthStencilView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
-	depthStencilView.subresourceRange.baseMipLevel = 0;
-	depthStencilView.subresourceRange.levelCount = 1;
+	depthStencilView.sType							 = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+	depthStencilView.pNext							 = NULL;
+	depthStencilView.viewType						 = VK_IMAGE_VIEW_TYPE_2D;
+	depthStencilView.format							 = depthFormat;
+	depthStencilView.flags							 = 0;
+	depthStencilView.subresourceRange				 = {};
+	depthStencilView.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+	depthStencilView.subresourceRange.baseMipLevel   = 0;
+	depthStencilView.subresourceRange.levelCount     = 1;
 	depthStencilView.subresourceRange.baseArrayLayer = 0;
-	depthStencilView.subresourceRange.layerCount = 1;
+	depthStencilView.subresourceRange.layerCount	 = 1;
 
 	VkMemoryRequirements memReqs;
 
@@ -558,27 +555,36 @@ VkResult setupDepthStencil()
 	if (err != VK_SUCCESS) {
 		return err;
 	}
+
+	// Allocate memory for the image.
 	vkGetImageMemoryRequirements(device, depthStencil.image, &memReqs);
-	mem_alloc.allocationSize = memReqs.size;
-	mem_alloc.memoryTypeIndex = getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-	err = vkAllocateMemory(device, &mem_alloc, NULL, &depthStencil.mem);
+	memAlloc.allocationSize							 = memReqs.size;
+	memAlloc.memoryTypeIndex						 = getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	
+	err = vkAllocateMemory(device, &memAlloc, NULL, &depthStencil.mem);
 	if (err != VK_SUCCESS) {
 		return err;
 	}
 
+	// Bind image to memory.
 	err = vkBindImageMemory(device, depthStencil.image, depthStencil.mem, 0);
 	if (err != VK_SUCCESS) {
 		return err;
 	}
-	VkImageMemoryBarrier imageMemoryBarrier;
-	imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	imageMemoryBarrier.srcAccessMask = 0;
-	imageMemoryBarrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-	imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	imageMemoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 };
-	imageMemoryBarrier.image = depthStencil.image;
 
+	// Tutnote: We issue an Image memory barrier here to convert the layout from
+	// VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+	// so that it can be used in the renderpass.
+	VkImageMemoryBarrier imageMemoryBarrier;
+	imageMemoryBarrier.sType						= VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	imageMemoryBarrier.srcAccessMask				= 0;
+	imageMemoryBarrier.dstAccessMask				= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	imageMemoryBarrier.oldLayout					= VK_IMAGE_LAYOUT_UNDEFINED;
+	imageMemoryBarrier.newLayout					= VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	imageMemoryBarrier.subresourceRange				= { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 };
+	imageMemoryBarrier.image						= depthStencil.image;
+
+	// Tutnote: TODO xxx
 	vkCmdPipelineBarrier(
 		setupCmdBuffer,
 		VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
@@ -588,8 +594,9 @@ VkResult setupDepthStencil()
 		0, NULL,
 		1, &imageMemoryBarrier);
 
-	depthStencilView.image = depthStencil.image;
+	depthStencilView.image							= depthStencil.image;
 	err = vkCreateImageView(device, &depthStencilView, NULL, &depthStencil.view);
+
 	return err;
 }
 
@@ -599,55 +606,54 @@ VkResult setupRenderPass()
 	VkAttachmentDescription attachments[2] = {};
 
 	// Color attachment
-	attachments[0].format = colorFormat;
-	attachments[0].samples = VK_SAMPLE_COUNT_1_BIT;
-	attachments[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachments[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachments[0].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	// TutNote: When we need to present this, the layout has to be in VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-	attachments[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL; 
+	attachments[0].format		    = colorFormat;
+	attachments[0].samples		    = VK_SAMPLE_COUNT_1_BIT;
+	attachments[0].loadOp		    = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachments[0].storeOp		    = VK_ATTACHMENT_STORE_OP_STORE;
+	attachments[0].stencilLoadOp    = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachments[0].stencilStoreOp   = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachments[0].initialLayout    = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	attachments[0].finalLayout	    = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL; 
 
 	// Depth attachment
-	attachments[1].format = depthFormat;
-	attachments[1].samples = VK_SAMPLE_COUNT_1_BIT;
-	attachments[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachments[1].storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachments[1].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachments[1].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachments[1].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	attachments[1].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	attachments[1].format		    = depthFormat;
+	attachments[1].samples	        = VK_SAMPLE_COUNT_1_BIT;
+	attachments[1].loadOp		    = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachments[1].storeOp		    = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachments[1].stencilLoadOp    = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachments[1].stencilStoreOp   = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachments[1].initialLayout    = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	attachments[1].finalLayout      = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 	VkAttachmentReference colorReference = {};
-	colorReference.attachment = 0;
-	colorReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	colorReference.attachment	    = 0;
+	colorReference.layout		    = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	VkAttachmentReference depthReference = {};
-	depthReference.attachment = 1;
-	depthReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	VkSubpassDescription subpass = {};
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.flags = 0;
-	subpass.inputAttachmentCount = 0;
-	subpass.pInputAttachments = NULL;
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorReference;
-	subpass.pResolveAttachments = NULL;
+	depthReference.attachment	    = 1;
+	depthReference.layout		    = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+ 
+	VkSubpassDescription subpass    = {};
+	subpass.pipelineBindPoint	    = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.flags				    = 0;
+	subpass.inputAttachmentCount    = 0;
+	subpass.pInputAttachments	    = NULL;
+	subpass.colorAttachmentCount    = 1;
+	subpass.pColorAttachments       = &colorReference;
+	subpass.pResolveAttachments     = NULL;
 	subpass.pDepthStencilAttachment = &depthReference;
 	subpass.preserveAttachmentCount = 0;
-	subpass.pPreserveAttachments = NULL;
+	subpass.pPreserveAttachments    = NULL;
 
 	VkRenderPassCreateInfo renderPassInfo = {};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.pNext = NULL;
-	renderPassInfo.attachmentCount = 2;
-	renderPassInfo.pAttachments = attachments;
-	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpass;
-	renderPassInfo.dependencyCount = 0;
-	renderPassInfo.pDependencies = NULL;
+	renderPassInfo.sType			= VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassInfo.pNext			= NULL;
+	renderPassInfo.attachmentCount  = 2;
+	renderPassInfo.pAttachments     = attachments;
+	renderPassInfo.subpassCount		= 1;
+	renderPassInfo.pSubpasses		= &subpass;
+	renderPassInfo.dependencyCount	= 0;
+	renderPassInfo.pDependencies	= NULL;
 
 	err = vkCreateRenderPass(device, &renderPassInfo, NULL, &renderPass);
 	return err;
@@ -667,8 +673,13 @@ VkResult setupFrameBuffer()
 	VkResult err;
 	VkImageView attachments[2];
 
-	// Depth/Stencil attachment is the same for all frame buffers
-	attachments[1] = depthStencil.view;
+	// Tutnote: We have 3 swapchain images, and each of them act as a color attachment
+	// point for each of the 3 Framebuffers. However, the depth/stencil attachment
+	// is shared across all of them. At any given time there's only one sub-pass active
+	// in this example. If you have multiple threads trying to write into multiple
+	// Framebuffers, then you would need multiple depth attachment points.
+	// However, for color images, one would be written in a sub-pass and one would be presented.
+	attachments[1]						= depthStencil.view;
 
 	// Create frame buffers for every swap chain image
 	frameBuffers.resize(imageCount);
@@ -917,52 +928,41 @@ VkResult prepareVertices()
 VkResult preparePipelines()
 {
 	VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
+	pipelineCreateInfo.sType	   = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipelineCreateInfo.layout	   = pipelineLayout;
+	pipelineCreateInfo.renderPass  = renderPass;
 
-	pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	// The layout used for this pipeline
-	pipelineCreateInfo.layout = pipelineLayout;
-	// Renderpass this pipeline is attached to
-	pipelineCreateInfo.renderPass = renderPass;
-
-	// Vertex input state
 	// Describes the topoloy used with this pipeline
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = {};
-	inputAssemblyState.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	// This pipeline renders vertex data as triangle lists
-	inputAssemblyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	inputAssemblyState.sType	   = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	inputAssemblyState.topology	   = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
 	// Rasterization state
 	VkPipelineRasterizationStateCreateInfo rasterizationState = {};
-	rasterizationState.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-	// Solid polygon mode
-	rasterizationState.polygonMode = VK_POLYGON_MODE_FILL;
+	rasterizationState.sType	   = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizationState.polygonMode = VK_POLYGON_MODE_FILL; // Solid polygon mode
 	// No culling
-	rasterizationState.cullMode = VK_CULL_MODE_NONE;
-	rasterizationState.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-	rasterizationState.depthClampEnable = VK_FALSE;
+	rasterizationState.cullMode				   = VK_CULL_MODE_NONE;
+	rasterizationState.frontFace			   = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+	rasterizationState.depthClampEnable        = VK_FALSE;
 	rasterizationState.rasterizerDiscardEnable = VK_FALSE;
-	rasterizationState.depthBiasEnable = VK_FALSE;
-	rasterizationState.lineWidth = 1.0f;
+	rasterizationState.depthBiasEnable	       = VK_FALSE;
+	rasterizationState.lineWidth			   = 1.0f;
 
 	// Color blend state
-	// Describes blend modes and color masks
 	VkPipelineColorBlendStateCreateInfo colorBlendState = {};
-	colorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-	// One blend attachment state
-	// Blending is not used in this example
+	colorBlendState.sType									    = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	VkPipelineColorBlendAttachmentState blendAttachmentState[1] = {};
-	blendAttachmentState[0].colorWriteMask = 0xf;
-	blendAttachmentState[0].blendEnable = VK_FALSE;
-	colorBlendState.attachmentCount = 1;
-	colorBlendState.pAttachments = blendAttachmentState;
+	blendAttachmentState[0].colorWriteMask						= 0xf;
+	blendAttachmentState[0].blendEnable						    = VK_FALSE; // No blending in this example
+	colorBlendState.attachmentCount								= 1;
+	colorBlendState.pAttachments								= blendAttachmentState;
 
 	// Viewport state
 	VkPipelineViewportStateCreateInfo viewportState = {};
-	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	// One viewport
+	viewportState.sType	= VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 	viewportState.viewportCount = 1;
-	// One scissor rectangle
-	viewportState.scissorCount = 1;
+	viewportState.scissorCount  = 1;
 
 	// Enable dynamic states
 	// Describes the dynamic states to be used with this pipeline
@@ -974,32 +974,28 @@ VkResult preparePipelines()
 	std::vector<VkDynamicState> dynamicStateEnables;
 	dynamicStateEnables.push_back(VK_DYNAMIC_STATE_VIEWPORT);
 	dynamicStateEnables.push_back(VK_DYNAMIC_STATE_SCISSOR);
-	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.pDynamicStates = dynamicStateEnables.data();
+	dynamicState.sType			   = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	dynamicState.pDynamicStates    = dynamicStateEnables.data();
 	dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
 
 	// Depth and stencil state
-	// Describes depth and stenctil test and compare ops
 	VkPipelineDepthStencilStateCreateInfo depthStencilState = {};
-	// Basic depth compare setup with depth writes and depth test enabled
-	// No stencil used 
-	depthStencilState.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	depthStencilState.depthTestEnable = VK_TRUE;
-	depthStencilState.depthWriteEnable = VK_TRUE;
-	depthStencilState.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+	depthStencilState.sType					= VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	depthStencilState.depthTestEnable		= VK_TRUE;
+	depthStencilState.depthWriteEnable		= VK_TRUE;
+	depthStencilState.depthCompareOp		= VK_COMPARE_OP_LESS_OR_EQUAL;
 	depthStencilState.depthBoundsTestEnable = VK_FALSE;
-	depthStencilState.back.failOp = VK_STENCIL_OP_KEEP;
-	depthStencilState.back.passOp = VK_STENCIL_OP_KEEP;
-	depthStencilState.back.compareOp = VK_COMPARE_OP_ALWAYS;
-	depthStencilState.stencilTestEnable = VK_FALSE;
-	depthStencilState.front = depthStencilState.back;
+	depthStencilState.back.failOp			= VK_STENCIL_OP_KEEP;
+	depthStencilState.back.passOp			= VK_STENCIL_OP_KEEP;
+	depthStencilState.back.compareOp		= VK_COMPARE_OP_ALWAYS;
+	depthStencilState.stencilTestEnable		= VK_FALSE;
+	depthStencilState.front					= depthStencilState.back;
 
 	// Multi sampling state
 	VkPipelineMultisampleStateCreateInfo multisampleState = {};
-	multisampleState.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-	multisampleState.pSampleMask = NULL;
-	// No multi sampling used in this example
-	multisampleState.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	multisampleState.sType					= VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisampleState.pSampleMask		    = NULL;
+	multisampleState.rasterizationSamples	= VK_SAMPLE_COUNT_1_BIT;
 
 	// Shaders
 	static char const vss[] =
@@ -1007,7 +1003,7 @@ VkResult preparePipelines()
 		"layout(location = 0) in vec3 aVertex;\n"
 		"layout(location = 1) in vec3 aColor;\n"
 		"layout(location = 0) out vec3 vColor;\n"
-		"layout(binding = 0) uniform UBO\n"
+		"layout(binding = 0)  uniform UBO\n"
 		"{\n"
 		"	float color;\n"
 		"} ubo;\n"
@@ -1039,37 +1035,36 @@ VkResult preparePipelines()
 		return result;
 	}
 	VkPipelineShaderStageCreateInfo stageInfo[2] = { {},{} };
-	stageInfo[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	stageInfo[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+	stageInfo[0].sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	stageInfo[0].stage  = VK_SHADER_STAGE_VERTEX_BIT;
 	stageInfo[0].module = vsm;
-	stageInfo[0].pName = "main";
-	stageInfo[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	stageInfo[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	stageInfo[0].pName  = "main";
+	stageInfo[1].sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	stageInfo[1].stage  = VK_SHADER_STAGE_FRAGMENT_BIT;
 	stageInfo[1].module = fsm;
-	stageInfo[1].pName = "main";
+	stageInfo[1].pName  = "main";
 
-	// Assign states
 	// Assign pipeline state create information
-	pipelineCreateInfo.stageCount = 2;
-	pipelineCreateInfo.pStages = stageInfo;
-	pipelineCreateInfo.pVertexInputState = &vertices.inputState;
+	pipelineCreateInfo.stageCount		   = 2;
+	pipelineCreateInfo.pStages			   = stageInfo;
+	pipelineCreateInfo.pVertexInputState   = &vertices.inputState;
 	pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
 	pipelineCreateInfo.pRasterizationState = &rasterizationState;
-	pipelineCreateInfo.pColorBlendState = &colorBlendState;
-	pipelineCreateInfo.pMultisampleState = &multisampleState;
-	pipelineCreateInfo.pViewportState = &viewportState;
-	pipelineCreateInfo.pDepthStencilState = &depthStencilState;
-	pipelineCreateInfo.renderPass = renderPass;
-	pipelineCreateInfo.pDynamicState = &dynamicState;
+	pipelineCreateInfo.pColorBlendState	   = &colorBlendState;
+	pipelineCreateInfo.pMultisampleState   = &multisampleState;
+	pipelineCreateInfo.pViewportState	   = &viewportState;
+	pipelineCreateInfo.pDepthStencilState  = &depthStencilState;
+	pipelineCreateInfo.renderPass		   = renderPass;
+	pipelineCreateInfo.pDynamicState	   = &dynamicState;
 
 	// Create rendering pipeline
-	VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCreateInfo, NULL, &pipeline));
+	auto err = vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCreateInfo, NULL, &pipeline);
 
 	// shader modules can be destroyed while pipelines created using its shaders are still in use
 	DestroyShader(vsm);
 	DestroyShader(fsm);
 
-	return VK_SUCCESS;
+	return err;
 }
 
 VkResult setupDescriptorSetLayout()
@@ -1093,10 +1088,9 @@ VkResult setupDescriptorSetLayout()
 	vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout);
 
 	// Tutnote: Create the pipeline layout that is used to generate the rendering pipelines that are based on this descriptor set layout
-	// In a more complex scenario you would have different pipeline layouts for different descriptor set layouts that could be reused
 	VkPipelineLayoutCreateInfo pPipelineLayoutCreateInfo = {};
-	pPipelineLayoutCreateInfo.sType  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pPipelineLayoutCreateInfo.pNext  = nullptr;
+	pPipelineLayoutCreateInfo.sType			 = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pPipelineLayoutCreateInfo.pNext			 = nullptr;
 	pPipelineLayoutCreateInfo.setLayoutCount = 1;
 	pPipelineLayoutCreateInfo.pSetLayouts    = &descriptorSetLayout;
 	VkResult err = vkCreatePipelineLayout(device, &pPipelineLayoutCreateInfo, nullptr, &pipelineLayout);
@@ -1178,55 +1172,55 @@ VkResult prepareUniformBuffers()
 	return err;
 }
 
-VkResult buildCommandBuffers()
+VkResult buildRenderCommandBuffers()
 {
 	VkCommandBufferBeginInfo cmdBufInfo = {};
-	cmdBufInfo.sType				= VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	cmdBufInfo.pNext				= NULL;
+	cmdBufInfo.sType							 = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	cmdBufInfo.pNext							 = NULL;
 
 	// Set clear values for all framebuffer attachments with loadOp set to clear
 	// We use two attachments (color and depth) that are cleared at the 
 	// start of the subpass and as such we need to set clear values for both
 	VkClearValue clearValues[2];
-	clearValues[0].color		   = { 1.0f, 1.0f, 1.0f, 0.99f };
-	clearValues[1].depthStencil	   = { 1.0f, 0 };
+	clearValues[0].color						 = { 1.0f, 1.0f, 1.0f, 0.99f };
+	clearValues[1].depthStencil					 = { 1.0f, 0 };
 
-	VkRenderPassBeginInfo renderPassBeginInfo = {};
-	renderPassBeginInfo.sType	   = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassBeginInfo.pNext	   = NULL;
-	renderPassBeginInfo.renderPass = renderPass;
-	renderPassBeginInfo.renderArea.offset.x = 0;
-	renderPassBeginInfo.renderArea.offset.y = 0;
-	renderPassBeginInfo.renderArea.extent.width = width;
+	VkRenderPassBeginInfo renderPassBeginInfo	 = {};
+	renderPassBeginInfo.sType					 = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassBeginInfo.pNext					 = NULL;
+	renderPassBeginInfo.renderPass				 = renderPass;
+	renderPassBeginInfo.renderArea.offset.x		 = 0;
+	renderPassBeginInfo.renderArea.offset.y	 	 = 0;
+	renderPassBeginInfo.renderArea.extent.width  = width;
 	renderPassBeginInfo.renderArea.extent.height = height;
-	renderPassBeginInfo.clearValueCount = 2;
-	renderPassBeginInfo.pClearValues = clearValues;
+	renderPassBeginInfo.clearValueCount			 = 2;
+	renderPassBeginInfo.pClearValues			 = clearValues;
 
 	for (int32_t i = 0; i < drawCmdBuffers.size(); ++i)
 	{
 		// Set target frame buffer
 		renderPassBeginInfo.framebuffer = frameBuffers[i];
 
-		VK_CHECK_RESULT(vkBeginCommandBuffer(drawCmdBuffers[i], &cmdBufInfo));
+		vkBeginCommandBuffer(drawCmdBuffers[i], &cmdBufInfo);
 
 		// Start the first sub pass specified in our default render pass setup by the base class
 		// This will clear the color and depth attachment
 		vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		// Update dynamic viewport state
-		VkViewport viewport = {};
-		viewport.height = (float)height;
-		viewport.width = (float)width;
-		viewport.minDepth = (float) 0.0f;
-		viewport.maxDepth = (float) 1.0f;
+		VkViewport viewport						= {};
+		viewport.height							= (float)height;
+		viewport.width							= (float)width;
+		viewport.minDepth						= (float) 0.0f;
+		viewport.maxDepth						= (float) 1.0f;
 		vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
 		// Update dynamic scissor state
-		VkRect2D scissor = {};
-		scissor.extent.width = width;
-		scissor.extent.height = height;
-		scissor.offset.x = 0;
-		scissor.offset.y = 0;
+		VkRect2D scissor						= {};
+		scissor.extent.width					= width;
+		scissor.extent.height					= height;
+		scissor.offset.x					    = 0;
+		scissor.offset.y						= 0;
 		vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 		// Bind descriptor sets describing shader binding points
@@ -1254,18 +1248,18 @@ VkResult buildCommandBuffers()
 		// This will transform the frame buffer color attachment to a
 		// new layout for presenting it to the windowing system integration 
 		VkImageMemoryBarrier prePresentBarrier = {};
-		prePresentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		prePresentBarrier.pNext = NULL;
-		prePresentBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		prePresentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		prePresentBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		prePresentBarrier.sType					= VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		prePresentBarrier.pNext					= NULL;
+		prePresentBarrier.srcAccessMask			= VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		prePresentBarrier.dstAccessMask			= VK_ACCESS_MEMORY_READ_BIT;
+		prePresentBarrier.oldLayout				= VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		// Tutnote: This is where we transition the FB image type via an Image barrier.
 		// The older format was in VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-		prePresentBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		prePresentBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		prePresentBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		prePresentBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+		prePresentBarrier.newLayout				= VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		prePresentBarrier.srcQueueFamilyIndex   = VK_QUEUE_FAMILY_IGNORED;
+		prePresentBarrier.dstQueueFamilyIndex	= VK_QUEUE_FAMILY_IGNORED;
+		prePresentBarrier.subresourceRange		= { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 		prePresentBarrier.image = buffers[i].image;
 
 		VkImageMemoryBarrier *pMemoryBarrier = &prePresentBarrier;
@@ -1278,35 +1272,27 @@ VkResult buildCommandBuffers()
 			0, NULL,
 			1, &prePresentBarrier);
 
-		VK_CHECK_RESULT(vkEndCommandBuffer(drawCmdBuffers[i]));
+		vkEndCommandBuffer(drawCmdBuffers[i]);
 	}
-
-	// Build command buffers for the post present image barrier for each swap chain image
-	// Note: The command Buffers are allocated in the base class
 
 	for (uint32_t i = 0; i < imageCount; i++)
 	{
-		// Insert a post present image barrier to transform the image back to a
-		// color attachment that our render pass can write to
-		// We always use undefined image layout as the source as it doesn't actually matter
-		// what is done with the previous image contents
+		// Tutnote: Needed for the next frame's rendering.
 		VkImageMemoryBarrier postPresentBarrier = {};
-		postPresentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		postPresentBarrier.pNext = NULL;
-		postPresentBarrier.srcAccessMask = 0;
-		postPresentBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		postPresentBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		postPresentBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		postPresentBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		postPresentBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		postPresentBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-		postPresentBarrier.image = buffers[i].image;
+		postPresentBarrier.sType				= VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		postPresentBarrier.pNext				= NULL;
+		postPresentBarrier.srcAccessMask		= 0;
+		postPresentBarrier.dstAccessMask		= VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		postPresentBarrier.oldLayout			= VK_IMAGE_LAYOUT_UNDEFINED;
+		postPresentBarrier.newLayout			= VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		postPresentBarrier.srcQueueFamilyIndex  = VK_QUEUE_FAMILY_IGNORED;
+		postPresentBarrier.dstQueueFamilyIndex  = VK_QUEUE_FAMILY_IGNORED;
+		postPresentBarrier.subresourceRange		= { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+		postPresentBarrier.image			    = buffers[i].image;
 
-		// Use dedicated command buffer from example base class for submitting the post present barrier
 		VkCommandBufferBeginInfo cmdBufInfo = {};
-		cmdBufInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-		VK_CHECK_RESULT(vkBeginCommandBuffer(postPresentCmdBuffers[i], &cmdBufInfo));
+		cmdBufInfo.sType						= VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		vkBeginCommandBuffer(postPresentCmdBuffers[i], &cmdBufInfo);
 
 		// Put post present barrier into command buffer
 		vkCmdPipelineBarrier(
@@ -1318,8 +1304,9 @@ VkResult buildCommandBuffers()
 			0, NULL,
 			1, &postPresentBarrier);
 
-		VK_CHECK_RESULT(vkEndCommandBuffer(postPresentCmdBuffers[i]));
+		vkEndCommandBuffer(postPresentCmdBuffers[i]);
 	}
+
 	return VK_SUCCESS;
 }
 
@@ -1335,10 +1322,11 @@ VkResult updateScene()
 
 VkResult draw()
 {
-	// Get next image in the swap chain (back/front buffer)
+	// Tutnote: Get next image in the swap chain.
+	// The presentComplete will be signalled by the Display once the Image has been released.
 	vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, semaphores.presentComplete, NULL, &currentBuffer);
 
-	// Submit the post present image barrier to transform the image back to a color attachment
+	// Tutnote: Submit the post present image barrier to transform the image back to a color attachment
 	// that can be used to write to by our render pass
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType					= VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -1346,13 +1334,13 @@ VkResult draw()
 	submitInfo.pCommandBuffers			= &postPresentCmdBuffers[currentBuffer];
 	vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
 
-	// Tutnote: TODO: use a semaphore here!
-	// Make sure that the image barrier command submitted to the queue 
-	// has finished executing
+	// Make sure that the image barrier command submitted to the queue has finished executing
+
+	// Tutnote: TODO: This also could use a semaphore and avoid the CPU wait completely. This is an example only!
+	// This is equivalent to a glFinish(). It should be avoided at all costs ince this causes stalling of the submissions.
 	vkQueueWaitIdle(queue);
 
-	// The submit info strcuture contains a list of
-	// command buffers and semaphores to be submitted to a queue
+	// The submit info strcuture contains a list of ommand buffers and semaphores to be submitted to a queue
 	// If you want to submit multiple command buffers, pass an array
 	VkPipelineStageFlags pipelineStages = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 	submitInfo.sType					= VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -1373,10 +1361,8 @@ VkResult draw()
 	submitInfo2.pCommandBuffers			= &prePresentCmdBuffers[currentBuffer];
 	vkQueueSubmit(queue, 1, &submitInfo2, VK_NULL_HANDLE);
 
-	// Tutnote: Present the current buffer to the swap chain
-	// We pass the signal semaphore from the submit info
-	// to ensure that the image is not rendered until
-	// all commands have been submitted
+	// Tutnote: Present the current buffer to the swap chain. We pass the signal semaphore from the submit info
+	// to ensure that the image is not rendered until all commands have been submitted
 	VkPresentInfoKHR presentInfo = {};
 	presentInfo.sType					= VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.pNext					= NULL;
@@ -1574,7 +1560,6 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	// Setup the rest of vulkan
 	err = createCommandPool();
 	if (err != VK_SUCCESS) {
 		std::cout << "error at createCommandPool: " << err << std::endl;
@@ -1587,58 +1572,60 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	err = createSetupCommandBuffer();
-	if (err != VK_SUCCESS) {
-		std::cout << "error at createSetupCommandBuffer: " << err << std::endl;
-		return 1;
-	}
 
 	// Setup initial stuff.
 	{
-		err = createCommandBuffers();
+		// Tutnote: It is a common practice in Vulkan to use a temporary command buffer initially
+		// to issue some simple command buffers for image transitions, buffer copies, etc.
+		err = createSetupCommandBuffer();
 		if (err != VK_SUCCESS) {
-			std::cout << "error at createCommandBuffers: " << err << std::endl;
+			std::cout << "error at createSetupCommandBuffer: " << err << std::endl;
 			return 1;
 		}
-		err = buildPresentCommandBuffers();
-		if (err != VK_SUCCESS) {
-			std::cout << "error at buildPresentCommandBuffers: " << err << std::endl;
-			return 1;
-		}
+
 		err = setupDepthStencil();
 		if (err != VK_SUCCESS) {
 			std::cout << "error at setupDepthStencil: " << err << std::endl;
 			return 1;
 		}
-		err = setupRenderPass();
+
+		// Flush the setup command buffer.
+		err = flushSetupCommandBuffer();
 		if (err != VK_SUCCESS) {
-			std::cout << "error at setupRenderPass: " << err << std::endl;
-			return 1;
-		}
-		err = createPipelineCache();
-		if (err != VK_SUCCESS) {
-			std::cout << "error at createPipelineCache: " << err << std::endl;
-			return 1;
-		}
-		err = setupFrameBuffer();
-		if (err != VK_SUCCESS) {
-			std::cout << "error at setupFrameBuffer: " << err << std::endl;
+			std::cout << "error at flushSetupCommandBuffer: " << err << std::endl;
 			return 1;
 		}
 	}
-	// Flush the setup command buffer.
-	err = flushSetupCommandBuffer();
+
+	err = createPipelineCache();
 	if (err != VK_SUCCESS) {
-		std::cout << "error at flushSetupCommandBuffer: " << err << std::endl;
+		std::cout << "error at createPipelineCache: " << err << std::endl;
 		return 1;
 	}
 
-	// Now begin with the rest of the setup.
-	err = createSetupCommandBuffer();
+	err = createCommandBuffers();
 	if (err != VK_SUCCESS) {
-		std::cout << "error at createSetupCommandBuffer: " << err << std::endl;
+		std::cout << "error at createCommandBuffers: " << err << std::endl;
 		return 1;
 	}
+	err = buildPresentCommandBuffers();
+	if (err != VK_SUCCESS) {
+		std::cout << "error at buildPresentCommandBuffers: " << err << std::endl;
+		return 1;
+	}
+
+	err = setupRenderPass();
+	if (err != VK_SUCCESS) {
+		std::cout << "error at setupRenderPass: " << err << std::endl;
+		return 1;
+	}
+
+	err = setupFrameBuffer();
+	if (err != VK_SUCCESS) {
+		std::cout << "error at setupFrameBuffer: " << err << std::endl;
+		return 1;
+	}
+
 	err = prepareSemaphore();
 	if (err != VK_SUCCESS) {
 		std::cout << "error at prepareSemaphore: " << err << std::endl;
@@ -1674,9 +1661,9 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	err = buildCommandBuffers();
+	err = buildRenderCommandBuffers();
 	if (err != VK_SUCCESS) {
-		std::cout << "error at buildCommandBuffers: " << err << std::endl;
+		std::cout << "error at buildRenderCommandBuffers: " << err << std::endl;
 		return 1;
 	}
 
